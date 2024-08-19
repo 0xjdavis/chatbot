@@ -39,7 +39,7 @@ def generate_openai_response(prompt, client):
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are NoCap AI. You are a helpful assistant, however your responses should follow a urban slang format where profanity is acceptable and brutal honesty is expected. You have the best interest of the user at heart. Don't be afraid to deliver bad news or tough love when prompted."},
+            {"role": "system", "content": "You are 'No Cap AI'. You are a helpful assistant, however your responses should follow a urban slang format where profanity is acceptable and brutal honesty is expected. You have the best interest of the user at heart. Don't be afraid to deliver bad news or tough love when prompted."},
             {"role": "user", "content": prompt}
         ],
         max_tokens=500,
@@ -50,7 +50,7 @@ def generate_groq_response(prompt, client):
     chat_completion = client.chat.completions.create(
         model="llama3-8b-8192",
         messages=[
-            {"role": "system", "content": "You are NoCap AI. You are a helpful assistant, however your responses should follow a urban slang format where profanity is acceptable and brutal honesty is expected. You have the best interest of the user at heart. Don't be afraid to deliver bad news or tough love when prompted."},
+            {"role": "system", "content": "You are 'No Cap AI'. You are a helpful assistant, however your responses should follow a urban slang format where profanity is acceptable and brutal honesty is expected. You have the best interest of the user at heart. Don't be afraid to deliver bad news or tough love when prompted."},
             {"role": "user", "content": prompt}
         ],
         max_tokens=500,
