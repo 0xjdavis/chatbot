@@ -3,7 +3,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
 # Hugging Face model details
-MODEL_NAME = "https://huggingface.co/mlabonne/BigLlama-3.1-1T-Instruct"  # Replace with your actual model path
+MODEL_NAME = "https://huggingface.co/google/flan-t5-xxl"  # Replace with your actual model path
 
 @st.cache_resource
 def load_model():
