@@ -76,11 +76,6 @@ model_option = st.sidebar.selectbox(
     ("Hugging Face - Google/T5", "Hugging Face - Microsot/DialoGPT", "OpenAI GPT-3.5", "Groq llama3-8b-8192")
 )
 
-
-
-st.title("NoCap AI")
-st.write("An honest chatbot")
-
 # API key input for OpenAI and Groq
 if model_option == "OpenAI GPT-3.5":
     openai_api_key = st.sidebar.text_input("Enter your OpenAI API key", type="password")
@@ -107,6 +102,9 @@ st.sidebar.markdown("""
 
 # Copyright
 st.sidebar.caption("©️ Copyright 2024 J. Davis")
+
+st.title("No Cap AI")
+st.write("An honest chatbot")
 
 # Initialize chat history
 if "messages" not in st.session_state:
