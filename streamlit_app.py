@@ -41,7 +41,8 @@ def generate_openai_response(prompt, client):
         messages=[
             {"role": "system", "content": "You are NoCap AI. You are a helpful assistant, however your responses should follow a urban slang format where profanity is acceptable and brutal honesty is expected. You have the best interest of the user at heart. Don't be afraid to deliver bad news or tough love when prompted."},
             {"role": "user", "content": prompt}
-        ]
+        ],
+        max_tokens=500,
     )
     return response.choices[0].message.content
 
@@ -52,14 +53,14 @@ def generate_groq_response(prompt, client):
             {"role": "system", "content": "You are NoCap AI. You are a helpful assistant, however your responses should follow a urban slang format where profanity is acceptable and brutal honesty is expected. You have the best interest of the user at heart. Don't be afraid to deliver bad news or tough love when prompted."},
             {"role": "user", "content": prompt}
         ],
-        max_tokens=1000,
+        max_tokens=500,
     )
     return chat_completion.choices[0].message.content
 
 
 # Setting page layout
 st.set_page_config(
-    page_title="NoCap AI",
+    page_title="No Cap AI",
     page_icon="✨",
     layout="centered",
     initial_sidebar_state="expanded"
@@ -67,7 +68,7 @@ st.set_page_config(
 
 # Sidebar for API Key and User Info
 st.sidebar.header("About App")
-st.sidebar.markdown('This is an app is an honest chatbot you can use various language models to produce responses from created by <a href="https://ai.jdavis.xyz" target="_blank">0xjdavis</a>.', unsafe_allow_html=True)
+st.sidebar.markdown('This is a honest chatbot app, no lie! You can use various language models to produce responses from created by <a href="https://ai.jdavis.xyz" target="_blank">0xjdavis</a>.', unsafe_allow_html=True)
 
 # Calendly
 st.sidebar.markdown("""
@@ -92,7 +93,7 @@ st.write("An honest chatbot")
 # Model selection
 model_option = st.sidebar.selectbox(
     "Choose a model",
-    ("Hugging Face - T5", "Hugging Face - DialoGPT", "OpenAI GPT-3.5", "Groq llama3-8b-8192")
+    ("Hugging Face - Google/T5", "Hugging Face - Microsot/DialoGPT", "OpenAI GPT-3.5", "Groq llama3-8b-8192")
 )
 
 # API key input for OpenAI and Groq
@@ -122,12 +123,12 @@ if prompt := st.chat_input("What's good?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     
     try:
-        if model_option == "Hugging Face - T5":
+        if model_option == "Hugging Face - Google/T5":
             # Load the model (uses st.cache_resource to only load once)
             tokenizer, model = load_t5_model()
             # Generate response
             response = generate_t5_response(prompt, model, tokenizer)
-        elif model_option == "Hugging Face - DialoGPT":
+        elif model_option == "Hugging Face - Microsoft/DialoGPT":
             # Load the model (uses st.cache_resource to only load once)
             tokenizer, model = load_dialogpt_model()
             # Generate response
