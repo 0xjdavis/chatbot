@@ -1,18 +1,18 @@
 import streamlit as st
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 import torch
 
 # Hugging Face model details
-MODEL_NAME = "https://huggingface.co/google/flan-t5-xxl"  # Replace with your actual model path
+MODEL_NAME = "google/flan-t5-base"  # Changed to a smaller, seq2seq model for demonstration
 
 @st.cache_resource
 def load_model():
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
+    model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME)
     return tokenizer, model
 
 def generate_response(prompt, model, tokenizer):
-    inputs = tokenizer(prompt, return_tensors="pt")
+    inputs = tokenizer(prompt, return_tensors="pt", max_length=512, truncation=True)
     with torch.no_grad():
         outputs = model.generate(**inputs, max_length=100, num_return_sequences=1)
     response = tokenizer.decode(outputs[0], skip_special_tokens=True)
@@ -35,13 +35,13 @@ if prompt := st.chat_input("What's good?"):
     st.chat_message("user").markdown(prompt)
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
-
+    
     # Load the model (uses st.cache_resource to only load once)
     tokenizer, model = load_model()
-
+    
     # Generate response
     response = generate_response(prompt, model, tokenizer)
-
+    
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
         st.markdown(response)
@@ -49,4 +49,4 @@ if prompt := st.chat_input("What's good?"):
     st.session_state.messages.append({"role": "assistant", "content": response})
 
 st.sidebar.title("About")
-st.sidebar.info("NoCap AI chatbot. It uses a model I created and hosted on Hugging Face to generate responses.")
+st.sidebar.info("NoCap AI chatbot. It uses a model hosted on Hugging Face to generate responses.")
