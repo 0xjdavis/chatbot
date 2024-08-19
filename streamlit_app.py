@@ -39,7 +39,7 @@ def generate_openai_response(prompt, client):
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are NoCap AI. You are a helpful assistant, however your responses should follow a urban slant format where profanity is acceptable and brutal honesty is expected. You have the best interest of the user at heart. Don't be afraid to deliver bad news or tough love when prompted."},
+            {"role": "system", "content": "You are NoCap AI. You are a helpful assistant, however your responses should follow a urban slang format where profanity is acceptable and brutal honesty is expected. You have the best interest of the user at heart. Don't be afraid to deliver bad news or tough love when prompted."},
             {"role": "user", "content": prompt}
         ]
     )
@@ -49,14 +49,47 @@ def generate_groq_response(prompt, client):
     chat_completion = client.chat.completions.create(
         model="llama3-8b-8192",
         messages=[
-            {"role": "system", "content": "You are NoCap AI. You are a helpful assistant, however your responses should follow a urban slant format where profanity is acceptable and brutal honesty is expected. You have the best interest of the user at heart. Don't be afraid to deliver bad news or tough love when prompted."},
+            {"role": "system", "content": "You are NoCap AI. You are a helpful assistant, however your responses should follow a urban slang format where profanity is acceptable and brutal honesty is expected. You have the best interest of the user at heart. Don't be afraid to deliver bad news or tough love when prompted."},
             {"role": "user", "content": prompt}
         ],
         max_tokens=1000,
     )
     return chat_completion.choices[0].message.content
 
-st.title("NoCap AI Chat Interface")
+
+
+
+# Setting page layout
+st.set_page_config(
+    page_title="Figma basics",
+    page_icon="✨",
+    layout="centered",
+    initial_sidebar_state="expanded"
+)
+
+# Sidebar for API Key and User Info
+st.sidebar.header("About App")
+st.sidebar.markdown('This is an app that retreives data from files using the Figma API created by <a href="https://ai.jdavis.xyz" target="_blank">0xjdavis</a>.', unsafe_allow_html=True)
+
+# Calendly
+st.sidebar.markdown("""
+    <hr />
+    <center>
+    <div style="border-radius:8px;padding:8px;background:#fff";width:100%;">
+    <img src="https://avatars.githubusercontent.com/u/98430977" alt="Oxjdavis" height="100" width="100" border="0" style="border-radius:50%"/>
+    <br />
+    <span style="height:12px;width:12px;background-color:#77e0b5;border-radius:50%;display:inline-block;"></span> <b>I'm available for new projects!</b><br />
+    <a href="https://calendly.com/0xjdavis" target="_blank"><button style="background:#126ff3;color:#fff;border: 1px #126ff3 solid;border-radius:8px;padding:8px 16px;margin:10px 0">Schedule a call</button></a><br />
+    </div>
+    </center>
+    <br />
+""", unsafe_allow_html=True)
+
+# Copyright
+st.sidebar.caption("©️ Copyright 2024 J. Davis")
+
+st.title("NoCap AI")
+st.write("An honest chatbot")
 
 # Model selection
 model_option = st.sidebar.selectbox(
@@ -121,4 +154,4 @@ if prompt := st.chat_input("What's good?"):
         st.error(f"An error occurred: {str(e)}")
 
 st.sidebar.title("About")
-st.sidebar.info("NoCap AI chatbot. It uses various models to generate responses.")
+st.sidebar.info("NoCap AI chatbot. It uses various models to generate honest responses.")
