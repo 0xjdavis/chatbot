@@ -70,6 +70,12 @@ st.set_page_config(
 st.sidebar.header("About App")
 st.sidebar.markdown('This is a honest chatbot app, no lie! You can use various language models to produce responses from created by <a href="https://ai.jdavis.xyz" target="_blank">0xjdavis</a>.', unsafe_allow_html=True)
 
+# Model selection
+model_option = st.sidebar.selectbox(
+    "Choose a model",
+    ("Hugging Face - Google/T5", "Hugging Face - Microsot/DialoGPT", "OpenAI GPT-3.5", "Groq llama3-8b-8192")
+)
+
 # Calendly
 st.sidebar.markdown("""
     <hr />
@@ -89,12 +95,6 @@ st.sidebar.caption("©️ Copyright 2024 J. Davis")
 
 st.title("NoCap AI")
 st.write("An honest chatbot")
-
-# Model selection
-model_option = st.sidebar.selectbox(
-    "Choose a model",
-    ("Hugging Face - Google/T5", "Hugging Face - Microsot/DialoGPT", "OpenAI GPT-3.5", "Groq llama3-8b-8192")
-)
 
 # API key input for OpenAI and Groq
 if model_option == "OpenAI GPT-3.5":
