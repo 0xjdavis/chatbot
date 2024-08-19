@@ -3,7 +3,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
 # Hugging Face model details
-MODEL_NAME = "huggingface.co/your-model-name"  # Replace with your actual model path
+MODEL_NAME = "https://huggingface.co/mlabonne/BigLlama-3.1-1T-Instruct"  # Replace with your actual model path
 
 @st.cache_resource
 def load_model():
@@ -49,4 +49,4 @@ if prompt := st.chat_input("What's good?"):
     st.session_state.messages.append({"role": "assistant", "content": response})
 
 st.sidebar.title("About")
-st.sidebar.info("This is a demo of the NoCap AI chatbot. It uses a model hosted on Hugging Face to generate responses.")
+st.sidebar.info("NoCap AI chatbot. It uses a model I created and hosted on Hugging Face to generate responses.")
