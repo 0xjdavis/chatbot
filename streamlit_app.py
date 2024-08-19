@@ -57,11 +57,9 @@ def generate_groq_response(prompt, client):
     return chat_completion.choices[0].message.content
 
 
-
-
 # Setting page layout
 st.set_page_config(
-    page_title="Figma basics",
+    page_title="NoCap AI",
     page_icon="✨",
     layout="centered",
     initial_sidebar_state="expanded"
@@ -69,7 +67,7 @@ st.set_page_config(
 
 # Sidebar for API Key and User Info
 st.sidebar.header("About App")
-st.sidebar.markdown('This is an app that retreives data from files using the Figma API created by <a href="https://ai.jdavis.xyz" target="_blank">0xjdavis</a>.', unsafe_allow_html=True)
+st.sidebar.markdown('This is an app is an honest chatbot you can use various language models to produce responses from created by <a href="https://ai.jdavis.xyz" target="_blank">0xjdavis</a>.', unsafe_allow_html=True)
 
 # Calendly
 st.sidebar.markdown("""
@@ -152,6 +150,3 @@ if prompt := st.chat_input("What's good?"):
         st.session_state.messages.append({"role": "assistant", "content": response})
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
-
-st.sidebar.title("About")
-st.sidebar.info("NoCap AI chatbot. It uses various models to generate honest responses.")
