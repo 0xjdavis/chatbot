@@ -1,39 +1,46 @@
 import streamlit as st
-from transformers import AutoModelForSeq2SeqLM, AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForSeq2SeqLM, AutoModelForMaskedLM, AutoTokenizer
 import torch
 import openai
 from openai import OpenAI
 import groq
 
 # Hugging Face model details
-HF_MODEL_FLAN_T5 = "google/flan-t5-base"
+HF_MODEL_T5 = "google/flan-t5-base"
 HF_MODEL_BERT = "bert-base-uncased"
 HF_MODEL_DISTILBERT = "distilbert-base-uncased"
 
 @st.cache_resource
-def load_hf_model_seq2seq():
-    tokenizer = AutoTokenizer.from_pretrained(HF_MODEL_FLAN_T5)
-    model = AutoModelForSeq2SeqLM.from_pretrained(HF_MODEL_FLAN_T5)
+def load_hf_model_t5():
+    tokenizer = AutoTokenizer.from_pretrained(HF_MODEL_T5)
+    model = AutoModelForSeq2SeqLM.from_pretrained(HF_MODEL_T5)
     return tokenizer, model
 
 @st.cache_resource
-def load_hf_model_causal(model_name):
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForCausalLM.from_pretrained(model_name)
+def load_hf_model_bert():
+    tokenizer = AutoTokenizer.from_pretrained(HF_MODEL_BERT)
+    model = AutoModelForMaskedLM.from_pretrained(HF_MODEL_BERT)
     return tokenizer, model
 
-def generate_hf_response_seq2seq(prompt, model, tokenizer):
+@st.cache_resource
+def load_hf_model_distilbert():
+    tokenizer = AutoTokenizer.from_pretrained(HF_MODEL_DISTILBERT)
+    model = AutoModelForMaskedLM.from_pretrained(HF_MODEL_DISTILBERT)
+    return tokenizer, model
+
+def generate_hf_response_t5(prompt, model, tokenizer):
     inputs = tokenizer(prompt, return_tensors="pt", max_length=512, truncation=True)
     with torch.no_grad():
         outputs = model.generate(**inputs, max_length=100, num_return_sequences=1)
     response = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return response
 
-def generate_hf_response_causal(prompt, model, tokenizer):
+def generate_hf_response_masked_lm(prompt, model, tokenizer):
     inputs = tokenizer(prompt, return_tensors="pt", max_length=512, truncation=True)
     with torch.no_grad():
-        outputs = model.generate(**inputs, max_length=100, num_return_sequences=1)
-    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        outputs = model(**inputs)
+    predicted_token_ids = outputs.logits.argmax(dim=-1)
+    response = tokenizer.decode(predicted_token_ids[0], skip_special_tokens=True)
     return response
 
 def generate_openai_response(prompt, client):
@@ -93,14 +100,14 @@ if prompt := st.chat_input("What's good?"):
     
     try:
         if model_option == "Hugging Face - google/flan-t5-base":
-            tokenizer, model = load_hf_model_seq2seq()
-            response = generate_hf_response_seq2seq(prompt, model, tokenizer)
+            tokenizer, model = load_hf_model_t5()
+            response = generate_hf_response_t5(prompt, model, tokenizer)
         elif model_option == "Hugging Face - bert-base-uncased":
-            tokenizer, model = load_hf_model_causal(HF_MODEL_BERT)
-            response = generate_hf_response_causal(prompt, model, tokenizer)
+            tokenizer, model = load_hf_model_bert()
+            response = generate_hf_response_masked_lm(prompt, model, tokenizer)
         elif model_option == "Hugging Face - distilbert-base-uncased":
-            tokenizer, model = load_hf_model_causal(HF_MODEL_DISTILBERT)
-            response = generate_hf_response_causal(prompt, model, tokenizer)
+            tokenizer, model = load_hf_model_distilbert()
+            response = generate_hf_response_masked_lm(prompt, model, tokenizer)
         elif model_option == "OpenAI GPT-3.5":
             if not openai_api_key:
                 st.error("Please enter your OpenAI API key in the sidebar.")
