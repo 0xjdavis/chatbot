@@ -7,12 +7,28 @@ import groq
 
 # Hugging Face model details
 HF_MODEL_NAME = "google/flan-t5-base"
+HF_MODEL_NAME = "google-bert/bert-base-uncased"
 
 @st.cache_resource
 def load_hf_model():
     tokenizer = AutoTokenizer.from_pretrained(HF_MODEL_NAME)
     model = AutoModelForSeq2SeqLM.from_pretrained(HF_MODEL_NAME)
     return tokenizer, model
+
+def load_hf_model2():
+    tokenizer = AutoTokenizer.from_pretrained(HF_MODEL_NAME)
+    model = AutoModelForSeq2SeqLM.from_pretrained(HF_MODEL_NAME)
+    return tokenizer, model
+
+def load_hf_model3():
+    tokenizer = AutoTokenizer.from_pretrained(HF_MODEL_NAME)
+    model = AutoModelForSeq2SeqLM.from_pretrained(HF_MODEL_NAME)
+    return tokenizer, model
+
+
+
+
+
 
 def generate_hf_response(prompt, model, tokenizer):
     inputs = tokenizer(prompt, return_tensors="pt", max_length=512, truncation=True)
@@ -47,7 +63,7 @@ st.title("NoCap AI Chat Interface")
 # Model selection
 model_option = st.sidebar.selectbox(
     "Choose a model",
-    ("Hugging Face", "OpenAI GPT-3.5", "Groq llama3-8b-8192")
+    ("Hugging Face - google/flan-t5-base", "Hugging Face - bert-base-uncased", "Hugging Face - distilbert-base-uncased", "OpenAI GPT-3.5", "Groq llama3-8b-8192")
 )
 
 # API key input for OpenAI and Groq
@@ -77,9 +93,14 @@ if prompt := st.chat_input("What's good?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     
     try:
-        if model_option == "Hugging Face":
+        if model_option == "Hugging Face - google/flan-t5-base":
             # Load the model (uses st.cache_resource to only load once)
             tokenizer, model = load_hf_model()
+            # Generate response
+            response = generate_hf_response(prompt, model, tokenizer)
+        elif model_option == "Hugging Face - bert-base-uncased":
+            # Load the model (uses st.cache_resource to only load once)
+            tokenizer, model = load_hf_model2()
             # Generate response
             response = generate_hf_response(prompt, model, tokenizer)
         elif model_option == "OpenAI GPT-3.5":
