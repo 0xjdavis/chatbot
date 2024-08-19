@@ -1,8 +1,8 @@
-# 💬 Chatbot template
+# NoCapAI
 
-A simple Streamlit app that shows how to build a chatbot using OpenAI's GPT-3.5.
+A down to earth AI using a finetuned GPT-3.5 model.
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://chatbot-template.streamlit.app/)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://nocapai.streamlit.app/)
 
 ### How to run it on your own machine
 
