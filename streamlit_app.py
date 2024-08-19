@@ -2,6 +2,7 @@ import streamlit as st
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 import torch
 import openai
+from openai import OpenAI
 import groq
 
 # Hugging Face model details
@@ -20,26 +21,24 @@ def generate_hf_response(prompt, model, tokenizer):
     response = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return response
 
-def generate_openai_response(prompt):
-    response = openai.ChatCompletion.create(
+def generate_openai_response(prompt, client):
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": prompt}
         ]
     )
-    return response.choices[0].message['content']
+    return response.choices[0].message.content
 
-def generate_groq_response(prompt):
-    client = groq.Groq()
+def generate_groq_response(prompt, client):
     chat_completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
         model="llama3-8b-8192",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=1000,
     )
     return chat_completion.choices[0].message.content
 
@@ -53,9 +52,13 @@ model_option = st.sidebar.selectbox(
 
 # API key input for OpenAI and Groq
 if model_option == "OpenAI GPT-3.5":
-    openai.api_key = st.sidebar.text_input("Enter your OpenAI API key", type="password")
+    openai_api_key = st.sidebar.text_input("Enter your OpenAI API key", type="password")
+    if openai_api_key:
+        openai_client = OpenAI(api_key=openai_api_key)
 elif model_option == "Groq llama3-8b-8192":
-    groq.api_key = st.sidebar.text_input("Enter your Groq API key", type="password")
+    groq_api_key = st.sidebar.text_input("Enter your Groq API key", type="password")
+    if groq_api_key:
+        groq_client = groq.Groq(api_key=groq_api_key)
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -73,26 +76,30 @@ if prompt := st.chat_input("What's good?"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
     
-    # Generate response based on selected model
-    if model_option == "Hugging Face":
-        tokenizer, model = load_hf_model()
-        response = generate_hf_response(prompt, model, tokenizer)
-    elif model_option == "OpenAI GPT-3.5":
-        if not openai.api_key:
-            st.error("Please enter your OpenAI API key in the sidebar.")
-            st.stop()
-        response = generate_openai_response(prompt)
-    elif model_option == "Groq llama3-8b-8192":
-        if not groq.api_key:
-            st.error("Please enter your Groq API key in the sidebar.")
-            st.stop()
-        response = generate_groq_response(prompt)
-    
-    # Display assistant response in chat message container
-    with st.chat_message("assistant"):
-        st.markdown(response)
-    # Add assistant response to chat history
-    st.session_state.messages.append({"role": "assistant", "content": response})
+    try:
+        if model_option == "Hugging Face":
+            # Load the model (uses st.cache_resource to only load once)
+            tokenizer, model = load_hf_model()
+            # Generate response
+            response = generate_hf_response(prompt, model, tokenizer)
+        elif model_option == "OpenAI GPT-3.5":
+            if not openai_api_key:
+                st.error("Please enter your OpenAI API key in the sidebar.")
+                st.stop()
+            response = generate_openai_response(prompt, openai_client)
+        elif model_option == "Groq llama3-8b-8192":
+            if not groq_api_key:
+                st.error("Please enter your Groq API key in the sidebar.")
+                st.stop()
+            response = generate_groq_response(prompt, groq_client)
+        
+        # Display assistant response in chat message container
+        with st.chat_message("assistant"):
+            st.markdown(response)
+        # Add assistant response to chat history
+        st.session_state.messages.append({"role": "assistant", "content": response})
+    except Exception as e:
+        st.error(f"An error occurred: {str(e)}")
 
 st.sidebar.title("About")
 st.sidebar.info("NoCap AI chatbot. It uses various models to generate responses.")
